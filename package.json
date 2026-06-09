@@ -1,0 +1,20 @@
+{
+  "name": "house-nails-app",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Aplicativo operativo para House Nails: agenda, clientes, pagos, inventario y recordatorios.",
+  "scripts": {
+    "dev": "vite --host 127.0.0.1",
+    "build": "vite build",
+    "preview": "vite preview --host 127.0.0.1",
+    "start": "vite --host 127.0.0.1"
+  },
+  "dependencies": {
+    "@vitejs/plugin-react": "latest",
+    "vite": "latest",
+    "react": "latest",
+    "react-dom": "latest",
+    "lucide-react": "latest"
+  }
+}
