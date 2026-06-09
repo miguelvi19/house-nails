@@ -7,7 +7,12 @@ Aplicativo base para estandarizar la operacion de House Nails.
 - Inicio con KPIs, ventas, equipo, agenda del dia y alertas de inventario.
 - Agenda semanal con filtros por manicurista.
 - Clientes con busqueda, filtros y vista de perfil.
+- Usuarios con 4 manicuristas y 3 administradores.
+- Entrada y salida de trabajo para manicuristas.
+- Permisos administrativos para inventario, pagos y costos.
 - Pagos y caja con pendientes de cobro.
+- Pagos a manicuristas.
+- Costos del local.
 - Inventario con alertas y ajuste de stock.
 - Recordatorios con plantillas e historial.
 

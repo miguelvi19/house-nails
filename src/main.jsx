@@ -6,6 +6,7 @@ import {
   ChartNoAxesColumnIncreasing,
   Check,
   ChevronRight,
+  Clock,
   ClipboardList,
   CreditCard,
   Home,
@@ -14,7 +15,9 @@ import {
   Plus,
   Search,
   Sparkles,
+  Trash2,
   Users,
+  UserCog,
   Wallet,
   X,
 } from "lucide-react";
@@ -44,7 +47,31 @@ const staff = [
   { id: 2, name: "Daniela", color: "#9b6fd4", initials: "DA", available: true },
   { id: 3, name: "Camila", color: "#2d9b7a", initials: "CA", available: false },
   { id: 4, name: "Sofia", color: "#d4913a", initials: "SO", available: true },
-  { id: 5, name: "Paola", color: "#3a7fd4", initials: "PA", available: true },
+];
+
+const admins = [
+  { id: 1, name: "Miguel", initials: "MI", role: "Administrador general", permissions: ["Inventario", "Pagos", "Costos"] },
+  { id: 2, name: "Carolina", initials: "CA", role: "Administradora de caja", permissions: ["Pagos", "Costos"] },
+  { id: 3, name: "Natalia", initials: "NA", role: "Administradora de inventario", permissions: ["Inventario"] },
+];
+
+const initialAttendance = [
+  { staffId: 1, checkIn: "08:45", checkOut: "", status: "Trabajando" },
+  { staffId: 2, checkIn: "09:05", checkOut: "", status: "Trabajando" },
+  { staffId: 3, checkIn: "", checkOut: "", status: "No ha llegado" },
+  { staffId: 4, checkIn: "08:55", checkOut: "17:30", status: "Salida registrada" },
+];
+
+const initialStaffPayments = [
+  { id: 1, staffId: 1, concept: "Comision servicios semana", amount: 180000, status: "Pendiente" },
+  { id: 2, staffId: 2, concept: "Bono puntualidad", amount: 45000, status: "Pagado" },
+  { id: 3, staffId: 4, concept: "Comision pedicure spa", amount: 65000, status: "Pendiente" },
+];
+
+const initialLocalCosts = [
+  { id: 1, concept: "Arriendo local", amount: 1600000, category: "Fijo", status: "Pendiente" },
+  { id: 2, concept: "Servicios publicos", amount: 380000, category: "Fijo", status: "Pagado" },
+  { id: 3, concept: "Compra insumos limpieza", amount: 125000, category: "Variable", status: "Pagado" },
 ];
 
 const services = [
@@ -62,12 +89,12 @@ const initialAppointments = [
   { id: 1, staffId: 1, day: 4, time: "09:00", client: "Maria Gonzalez", serviceId: 1, status: "done" },
   { id: 2, staffId: 2, day: 4, time: "09:30", client: "Laura Ospina", serviceId: 2, status: "done" },
   { id: 3, staffId: 4, day: 4, time: "10:30", client: "Natalia Rios", serviceId: 3, status: "active" },
-  { id: 4, staffId: 5, day: 4, time: "11:00", client: "Juliana Mora", serviceId: 4, status: "active" },
+  { id: 4, staffId: 3, day: 4, time: "11:00", client: "Juliana Mora", serviceId: 4, status: "active" },
   { id: 5, staffId: 1, day: 4, time: "12:00", client: "Andrea Castro", serviceId: 5, status: "pending" },
   { id: 6, staffId: 2, day: 4, time: "13:30", client: "Paula Vargas", serviceId: 6, status: "pending" },
   { id: 7, staffId: 3, day: 4, time: "14:00", client: "Isabela Duque", serviceId: 1, status: "pending" },
   { id: 8, staffId: 4, day: 4, time: "15:30", client: "Carolina Perez", serviceId: 7, status: "pending" },
-  { id: 9, staffId: 5, day: 5, time: "10:00", client: "Isabella Reyes", serviceId: 8, status: "pending" },
+  { id: 9, staffId: 4, day: 5, time: "10:00", client: "Isabella Reyes", serviceId: 8, status: "pending" },
   { id: 10, staffId: 1, day: 5, time: "12:00", client: "Alejandra Villa", serviceId: 2, status: "pending" },
   { id: 11, staffId: 3, day: 3, time: "10:00", client: "Diana Herrera", serviceId: 6, status: "done" },
   { id: 12, staffId: 4, day: 2, time: "11:30", client: "Mariana Soto", serviceId: 1, status: "done" },
@@ -122,6 +149,9 @@ function App() {
   const [appointments, setAppointments] = React.useState(initialAppointments);
   const [inventory, setInventory] = React.useState(initialInventory);
   const [templates, setTemplates] = React.useState(initialTemplates);
+  const [attendance, setAttendance] = React.useState(initialAttendance);
+  const [staffPayments, setStaffPayments] = React.useState(initialStaffPayments);
+  const [localCosts, setLocalCosts] = React.useState(initialLocalCosts);
   const [selectedClient, setSelectedClient] = React.useState(null);
   const [selectedAppointment, setSelectedAppointment] = React.useState(null);
   const [quickAction, setQuickAction] = React.useState(null);
@@ -133,6 +163,12 @@ function App() {
     setInventory,
     templates,
     setTemplates,
+    attendance,
+    setAttendance,
+    staffPayments,
+    setStaffPayments,
+    localCosts,
+    setLocalCosts,
     selectedClient,
     setSelectedClient,
     selectedAppointment,
@@ -175,6 +211,7 @@ const navItems = [
   { id: "dashboard", label: "Inicio", icon: Home },
   { id: "agenda", label: "Agenda", icon: CalendarDays },
   { id: "clientes", label: "Clientes", icon: Users },
+  { id: "usuarios", label: "Usuarios", icon: UserCog },
   { id: "pagos", label: "Pagos", icon: Wallet },
   { id: "inventario", label: "Inventario", icon: Package },
   { id: "recordatorios", label: "Recordatorios", icon: Bell },
@@ -184,6 +221,7 @@ const views = {
   dashboard: DashboardView,
   agenda: AgendaView,
   clientes: ClientsView,
+  usuarios: UsersView,
   pagos: PaymentsView,
   inventario: InventoryView,
   recordatorios: RemindersView,
@@ -373,6 +411,145 @@ function ClientsView({ setSelectedClient }) {
           </button>
         ))}
       </div>
+    </section>
+  );
+}
+
+function UsersView({ appointments, attendance, setAttendance, staffPayments, setStaffPayments, localCosts, setLocalCosts }) {
+  const [tab, setTab] = React.useState("manicuristas");
+  const pendingStaffPayments = staffPayments.filter((item) => item.status === "Pendiente").reduce((sum, item) => sum + item.amount, 0);
+  const pendingCosts = localCosts.filter((item) => item.status === "Pendiente").reduce((sum, item) => sum + item.amount, 0);
+
+  const markCheckIn = (staffId) => {
+    const now = new Date().toLocaleTimeString("es-CO", { hour: "2-digit", minute: "2-digit" });
+    setAttendance((items) => items.map((item) => item.staffId === staffId ? { ...item, checkIn: item.checkIn || now, status: "Trabajando" } : item));
+  };
+
+  const markCheckOut = (staffId) => {
+    const now = new Date().toLocaleTimeString("es-CO", { hour: "2-digit", minute: "2-digit" });
+    setAttendance((items) => items.map((item) => item.staffId === staffId ? { ...item, checkOut: now, status: "Salida registrada" } : item));
+  };
+
+  const markStaffPayment = (id) => {
+    setStaffPayments((items) => items.map((item) => item.id === id ? { ...item, status: "Pagado" } : item));
+  };
+
+  const deleteLocalCost = (id) => {
+    setLocalCosts((items) => items.filter((item) => item.id !== id));
+  };
+
+  return (
+    <section className="view-stack">
+      <div className="kpi-grid four">
+        <Kpi label="Manicuristas" value={staff.length} detail="Pueden agendar y marcar horario" icon={Users} />
+        <Kpi label="Administradores" value={admins.length} detail="Control de inventario y caja" icon={UserCog} />
+        <Kpi label="Pagos pendientes" value={moneyShort(pendingStaffPayments)} detail="A manicuristas" icon={Wallet} />
+        <Kpi label="Costos pendientes" value={moneyShort(pendingCosts)} detail="Del local" icon={ClipboardList} />
+      </div>
+
+      <div className="toolbar">
+        <Segmented
+          value={tab}
+          onChange={setTab}
+          options={[
+            ["manicuristas", "Manicuristas"],
+            ["administradores", "Administradores"],
+            ["pagos", "Pagos manicuristas"],
+            ["costos", "Costos local"],
+          ]}
+        />
+      </div>
+
+      {tab === "manicuristas" && (
+        <div className="user-grid">
+          {staff.map((member) => {
+            const dayAppointments = appointments.filter((item) => item.staffId === member.id && item.day === 4);
+            const record = attendance.find((item) => item.staffId === member.id);
+            return (
+              <section className="user-card" key={member.id}>
+                <div className="user-card-head">
+                  <Avatar initials={member.initials} color={member.color} size={44} />
+                  <span>
+                    <strong>{member.name}</strong>
+                    <small>Manicurista</small>
+                  </span>
+                  <Badge tone={record?.status === "Trabajando" ? "green" : record?.checkOut ? "blue" : "amber"}>{record?.status}</Badge>
+                </div>
+                <div className="mini-stats">
+                  <span><b>{dayAppointments.length}</b><small>Citas hoy</small></span>
+                  <span><b>{record?.checkIn || "--"}</b><small>Entrada</small></span>
+                  <span><b>{record?.checkOut || "--"}</b><small>Salida</small></span>
+                </div>
+                <div className="permission-list">
+                  <span><CalendarDays size={15} /> Puede agendar citas</span>
+                  <span><Clock size={15} /> Puede registrar ingreso y salida</span>
+                </div>
+                <div className="button-row">
+                  <button className="mini-button" onClick={() => markCheckIn(member.id)}>Marcar entrada</button>
+                  <button className="mini-button alt" onClick={() => markCheckOut(member.id)}>Marcar salida</button>
+                </div>
+              </section>
+            );
+          })}
+        </div>
+      )}
+
+      {tab === "administradores" && (
+        <div className="user-grid">
+          {admins.map((admin) => (
+            <section className="user-card" key={admin.id}>
+              <div className="user-card-head">
+                <Avatar initials={admin.initials} color={colors.rose} size={44} />
+                <span>
+                  <strong>{admin.name}</strong>
+                  <small>{admin.role}</small>
+                </span>
+                <Badge tone="rose">Admin</Badge>
+              </div>
+              <div className="permission-list">
+                {admin.permissions.includes("Inventario") && <span><Package size={15} /> Puede anadir y eliminar inventario</span>}
+                {admin.permissions.includes("Pagos") && <span><Wallet size={15} /> Puede registrar pagos a manicuristas</span>}
+                {admin.permissions.includes("Costos") && <span><ClipboardList size={15} /> Puede registrar costos del local</span>}
+              </div>
+            </section>
+          ))}
+        </div>
+      )}
+
+      {tab === "pagos" && (
+        <Panel title="Pagos a manicuristas" aside={money(pendingStaffPayments)}>
+          <div className="finance-list">
+            {staffPayments.map((payment) => {
+              const member = staffById(payment.staffId);
+              return (
+                <div className="finance-row" key={payment.id}>
+                  <Avatar initials={member?.initials} color={member?.color} size={34} />
+                  <span><strong>{member?.name}</strong><small>{payment.concept}</small></span>
+                  <b>{money(payment.amount)}</b>
+                  <Badge tone={payment.status === "Pagado" ? "green" : "amber"}>{payment.status}</Badge>
+                  {payment.status === "Pendiente" && <button className="mini-button" onClick={() => markStaffPayment(payment.id)}>Marcar pagado</button>}
+                </div>
+              );
+            })}
+          </div>
+        </Panel>
+      )}
+
+      {tab === "costos" && (
+        <Panel title="Costos del local" aside={money(pendingCosts)}>
+          <div className="finance-list">
+            {localCosts.map((cost) => (
+              <div className="finance-row" key={cost.id}>
+                <ClipboardList size={20} />
+                <span><strong>{cost.concept}</strong><small>{cost.category}</small></span>
+                <b>{money(cost.amount)}</b>
+                <Badge tone={cost.status === "Pagado" ? "green" : "amber"}>{cost.status}</Badge>
+                <button className="icon-button danger" onClick={() => deleteLocalCost(cost.id)} title="Eliminar costo"><Trash2 size={16} /></button>
+              </div>
+            ))}
+          </div>
+        </Panel>
+      )}
     </section>
   );
 }
